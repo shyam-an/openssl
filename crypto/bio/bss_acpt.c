@@ -66,6 +66,7 @@ static const BIO_METHOD methods_acceptp = {
     acpt_new,
     acpt_free,
     NULL,                       /* connect_callback_ctrl */
+    NULL 	/* bwrite_direct */
 };
 
 const BIO_METHOD *BIO_s_accept(void)

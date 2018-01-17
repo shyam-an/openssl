@@ -42,6 +42,7 @@ static const BIO_METHOD methods_linebuffer = {
     linebuffer_new,
     linebuffer_free,
     linebuffer_callback_ctrl,
+    NULL /* no direct write support yet */
 };
 
 const BIO_METHOD *BIO_f_linebuffer(void)

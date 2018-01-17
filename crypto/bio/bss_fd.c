@@ -72,6 +72,7 @@ static const BIO_METHOD methods_fdp = {
     fd_new,
     fd_free,
     NULL,                       /* fd_callback_ctrl */
+    NULL,                       /* bwrite_direct */
 };
 
 const BIO_METHOD *BIO_s_fd(void)

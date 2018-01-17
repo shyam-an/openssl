@@ -60,6 +60,12 @@ int (*BIO_meth_get_write_ex(BIO_METHOD *biom)) (BIO *, const char *, size_t,
     return biom->bwrite;
 }
 
+int (*BIO_meth_get_write_direct(BIO_METHOD *biom)) (BIO *, BIO_direct_write_cb,
+						    size_t, size_t *, void *)
+{
+    return biom->bwrite_direct;
+}
+
 /* Conversion for old style bwrite to new style */
 int bwrite_conv(BIO *bio, const char *data, size_t datal, size_t *written)
 {
@@ -93,6 +99,13 @@ int BIO_meth_set_write_ex(BIO_METHOD *biom,
 {
     biom->bwrite_old = NULL;
     biom->bwrite = bwrite;
+    return 1;
+}
+
+int BIO_meth_set_write_direct(BIO_METHOD *biom,
+                       int (*write_direct) (BIO *, BIO_direct_write_cb, size_t, size_t *, void *))
+{
+    biom->bwrite_direct = write_direct;
     return 1;
 }
 

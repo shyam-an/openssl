@@ -38,6 +38,7 @@ static const BIO_METHOD mem_method = {
     mem_new,
     mem_free,
     NULL,                      /* mem_callback_ctrl */
+    NULL	/* write direct */
 };
 
 static const BIO_METHOD secmem_method = {
@@ -55,6 +56,7 @@ static const BIO_METHOD secmem_method = {
     secmem_new,
     mem_free,
     NULL,                      /* mem_callback_ctrl */
+    NULL	/* write direct */
 };
 
 /* BIO memory stores buffer and read pointer  */
@@ -223,6 +225,42 @@ static int mem_write(BIO *b, const char *in, int inl)
     memcpy(bbm->buf->data + blen, in, inl);
     *bbm->readp = *bbm->buf;
     ret = inl;
+ end:
+    return ret;
+}
+
+static int mem_write_direct(BIO *b, BIO_direct_write_cb cb, size_t len, size_t *written, void *ptr)
+{
+    int ret = -1;
+    int blen;
+    BIO_BUF_MEM *bbm = (BIO_BUF_MEM *)b->ptr;
+
+    if (b == NULL || cb == NULL || ptr == NULL) {
+	// TODO: replace bio_f_mem_write
+        BIOerr(BIO_F_MEM_WRITE, BIO_R_NULL_PARAMETER);
+        goto end;
+    }
+    if (b->flags & BIO_FLAGS_MEM_RDONLY) {
+	// TODO: replace bio_f_mem_write
+        BIOerr(BIO_F_MEM_WRITE, BIO_R_WRITE_TO_READ_ONLY_BIO);
+        goto end;
+    }
+    BIO_clear_retry_flags(b);
+    blen = bbm->readp->length;
+    mem_buf_sync(b);
+    if (BUF_MEM_grow_clean(bbm->buf, blen + len) == 0)
+        goto end;
+    ret = cb(bbm->buf->data + blen, len, written, ptr);
+    if (ret < 0) {
+      if (BUF_MEM_grow_clean(bbm->buf, blen)  == 0) {
+	goto end;
+      }
+    } else {
+      if (BUF_MEM_grow_clean(bbm->buf, blen + *written)  == 0) {
+	goto end;
+      }
+      *bbm->readp = *bbm->buf;
+    }
  end:
     return ret;
 }

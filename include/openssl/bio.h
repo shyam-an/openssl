@@ -564,6 +564,10 @@ int BIO_read_ex(BIO *b, void *data, size_t dlen, size_t *readbytes);
 int BIO_gets(BIO *bp, char *buf, int size);
 int BIO_write(BIO *b, const void *data, int dlen);
 int BIO_write_ex(BIO *b, const void *data, size_t dlen, size_t *written);
+
+typedef int (*BIO_direct_write_cb) (void *, size_t, size_t *, void *);
+int BIO_write_direct(BIO *b, BIO_direct_write_cb cb, size_t len, size_t *written, void *ptr);
+
 int BIO_puts(BIO *bp, const char *buf);
 int BIO_indent(BIO *b, int indent, int max);
 long BIO_ctrl(BIO *bp, int cmd, long larg, void *parg);
@@ -765,6 +769,8 @@ int BIO_meth_set_write(BIO_METHOD *biom,
                        int (*write) (BIO *, const char *, int));
 int BIO_meth_set_write_ex(BIO_METHOD *biom,
                        int (*bwrite) (BIO *, const char *, size_t, size_t *));
+int BIO_meth_set_write_direct(BIO_METHOD *biom,
+                       int (*write_direct) (BIO *, BIO_direct_write_cb, size_t, size_t *, void *));
 int (*BIO_meth_get_read(BIO_METHOD *biom)) (BIO *, char *, int);
 int (*BIO_meth_get_read_ex(BIO_METHOD *biom)) (BIO *, char *, size_t, size_t *);
 int BIO_meth_set_read(BIO_METHOD *biom,

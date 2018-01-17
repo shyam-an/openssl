@@ -385,6 +385,30 @@ int BIO_write_ex(BIO *b, const void *data, size_t dlen, size_t *written)
     return ret;
 }
 
+int BIO_write_direct(BIO *b, BIO_direct_write_cb cb, size_t len, size_t *written, void *ptr)
+{
+    int ret;
+
+    if (b == NULL)
+        return 0;
+
+    if ((b->method == NULL) || (b->method->bwrite_direct == NULL)) {
+      // TODO - we need the equivalent of BIO_F_BIO_WRITE_INTERN
+        BIOerr(BIO_F_BIO_WRITE_INTERN, BIO_R_UNSUPPORTED_METHOD);
+        return -2;
+    }
+
+    if (!b->init) {
+      // TODO - we need the equivalent of BIO_F_BIO_WRITE_INTERN
+        BIOerr(BIO_F_BIO_WRITE_INTERN, BIO_R_UNINITIALIZED);
+        return -2;
+    }
+
+    ret = b->method->bwrite_direct(b, cb, len, written, ptr);
+
+    return ret;
+}
+
 int BIO_puts(BIO *b, const char *buf)
 {
     int ret;

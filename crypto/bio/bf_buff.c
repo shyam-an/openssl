@@ -37,6 +37,7 @@ static const BIO_METHOD methods_buffer = {
     buffer_new,
     buffer_free,
     buffer_callback_ctrl,
+    NULL /* no direct write support yet */
 };
 
 const BIO_METHOD *BIO_f_buffer(void)

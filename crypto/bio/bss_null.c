@@ -32,6 +32,7 @@ static const BIO_METHOD null_method = {
     NULL,
     NULL,
     NULL,                     /* null_callback_ctrl */
+    NULL		      /* null_write_direct */
 };
 
 const BIO_METHOD *BIO_s_null(void)

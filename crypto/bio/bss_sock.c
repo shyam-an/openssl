@@ -49,6 +49,7 @@ static const BIO_METHOD methods_sockp = {
     sock_new,
     sock_free,
     NULL,                       /* sock_callback_ctrl */
+    NULL,                       /* sock_write_direct */
 };
 
 const BIO_METHOD *BIO_s_socket(void)

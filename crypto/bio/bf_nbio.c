@@ -46,6 +46,7 @@ static const BIO_METHOD methods_nbiof = {
     nbiof_new,
     nbiof_free,
     nbiof_callback_ctrl,
+    NULL /* no direct write support yet */
 };
 
 const BIO_METHOD *BIO_f_nbio_test(void)
