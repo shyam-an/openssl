@@ -79,6 +79,7 @@ static const BIO_METHOD methods_dgramp = {
     dgram_free,
     NULL,                       /* dgram_callback_ctrl */
     NULL,                       /* bwrite_direct */
+    NULL,                       /* bread_direct */
 };
 
 # ifndef OPENSSL_NO_SCTP

@@ -318,6 +318,20 @@ int BIO_read_ex(BIO *b, void *data, size_t dlen, size_t *readbytes)
     return ret;
 }
 
+int BIO_read_direct(BIO *b, BIO_direct_read_cb cb, size_t *readbytes, void *ptr)
+{
+    int ret;
+
+    if ((b == NULL) || (b->method == NULL) || (b->method->bread_direct == NULL)) {
+        BIOerr(BIO_F_BIO_READ_INTERN, BIO_R_UNSUPPORTED_METHOD);
+        return -2;
+    }
+
+    ret = b->method->bread_direct(b, cb, readbytes, ptr);
+
+    return ret;
+}
+
 static int bio_write_intern(BIO *b, const void *data, size_t dlen,
                             size_t *written)
 {

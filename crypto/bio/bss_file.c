@@ -58,6 +58,7 @@ static const BIO_METHOD methods_filep = {
     file_free,
     NULL,                      /* file_callback_ctrl */
     NULL,                      /* bwrite_direct */
+    NULL,                      /* bread_direct */
 };
 
 BIO *BIO_new_file(const char *filename, const char *mode)

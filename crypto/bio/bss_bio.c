@@ -50,7 +50,8 @@ static const BIO_METHOD methods_biop = {
     bio_new,
     bio_free,
     NULL,                       /* no bio_callback_ctrl */
-    NULL                        /* bwrite_direct */
+    NULL,                       /* bwrite_direct */
+    NULL                        /* bread_direct */
 };
 
 const BIO_METHOD *BIO_s_bio(void)

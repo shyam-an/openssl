@@ -23,6 +23,7 @@ struct bio_method_st {
     int (*destroy) (BIO *);
     long (*callback_ctrl) (BIO *, int, BIO_info_cb *);
     int (*bwrite_direct) (BIO *, BIO_direct_write_cb, size_t, size_t *, void *);
+    int (*bread_direct) (BIO *, BIO_direct_read_cb, size_t *, void *);
 };
 
 void bio_free_ex_data(BIO *bio);

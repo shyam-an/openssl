@@ -70,7 +70,8 @@ static const BIO_METHOD methods_connectp = {
     conn_new,
     conn_free,
     conn_callback_ctrl,
-    NULL 			/* bwrite_direct */
+    NULL, 			/* bwrite_direct */
+    NULL 			/* bread_direct */
 };
 
 static int conn_state(BIO *b, BIO_CONNECT *c)

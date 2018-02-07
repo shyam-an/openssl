@@ -23,6 +23,7 @@ static int mem_free(BIO *data);
 static int mem_buf_free(BIO *data, int free_all);
 static int mem_buf_sync(BIO *h);
 static int mem_write_direct(BIO *b, BIO_direct_write_cb cb, size_t len, size_t *written, void *ptr);
+static int mem_read_direct(BIO *b, BIO_direct_read_cb cb, size_t *readbytes, void *ptr);
 
 static const BIO_METHOD mem_method = {
     BIO_TYPE_MEM,
@@ -39,7 +40,8 @@ static const BIO_METHOD mem_method = {
     mem_new,
     mem_free,
     NULL,                      /* mem_callback_ctrl */
-    mem_write_direct	/* write direct */
+    mem_write_direct,
+    mem_read_direct,
 };
 
 static const BIO_METHOD secmem_method = {
@@ -202,6 +204,35 @@ static int mem_read(BIO *b, char *out, int outl)
             BIO_set_retry_read(b);
     }
     return ret;
+}
+
+static int mem_read_direct(BIO *b, BIO_direct_read_cb cb, size_t *readbytes, void *ptr)
+{
+  int ret = -1;
+  BIO_BUF_MEM *bbm = (BIO_BUF_MEM *)b->ptr;
+  BUF_MEM *bm = bbm->readp;
+
+  if (b == NULL || cb == NULL || readbytes == NULL) {
+      // TODO: replace bio_f_mem_write
+      BIOerr(BIO_F_MEM_WRITE, BIO_R_NULL_PARAMETER);
+      goto end;
+  }
+  BIO_clear_retry_flags(b);
+  *readbytes = 0;
+  if (bm->length == 0)
+  {
+    ret = b->num;
+    if (ret != 0)
+	BIO_set_retry_read(b);
+  } else {
+    ret = cb(bm->data, bm->length, readbytes, ptr);
+    if (ret >= 0) {
+      bm->length -= *readbytes;
+      bm->data += *readbytes;
+    }
+  }
+  end:
+  return ret;
 }
 
 static int mem_write(BIO *b, const char *in, int inl)
