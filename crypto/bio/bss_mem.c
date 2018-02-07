@@ -22,6 +22,7 @@ static int secmem_new(BIO *h);
 static int mem_free(BIO *data);
 static int mem_buf_free(BIO *data, int free_all);
 static int mem_buf_sync(BIO *h);
+static int mem_write_direct(BIO *b, BIO_direct_write_cb cb, size_t len, size_t *written, void *ptr);
 
 static const BIO_METHOD mem_method = {
     BIO_TYPE_MEM,
@@ -38,7 +39,7 @@ static const BIO_METHOD mem_method = {
     mem_new,
     mem_free,
     NULL,                      /* mem_callback_ctrl */
-    NULL	/* write direct */
+    mem_write_direct	/* write direct */
 };
 
 static const BIO_METHOD secmem_method = {
